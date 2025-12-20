@@ -9,10 +9,36 @@ SELECT
   COUNTIF(tripduration IS NULL) AS null_tripduration
 FROM `valiant-monitor-476020-u8.Cyclist_Case_Study.Divvy_Trips_2019_Q1`;
 
--- Check tripduration distribution to infer units (seconds vs minutes)
+
+-- Create a view (recommended) so Power BI and all queries reuse same logic
+CREATE OR REPLACE VIEW `valiant-monitor-476020-u8.Cyclist_Case_Study.v_trips_q1_clean` AS
 SELECT
-  APPROX_QUANTILES(tripduration, 100)[OFFSET(50)] AS p50,
-  APPROX_QUANTILES(tripduration, 100)[OFFSET(90)] AS p90,
-  APPROX_QUANTILES(tripduration, 100)[OFFSET(99)] AS p99,
-  MAX(tripduration) AS max_tripduration
-FROM `valiant-monitor-476020-u8.Cyclist_Case_Study.Divvy_Trips_2019_Q1`;
+  trip_id,
+  start_time,
+  end_time,
+  bikeid,
+  usertype,
+  gender,
+  birthyear,
+  from_station_id,
+  from_station_name,
+  to_station_id,
+  to_station_name,
+
+  -- Normalize user type
+  CASE
+    WHEN LOWER(usertype) IN ('subscriber', 'member', 'annual member') THEN 'member'
+    WHEN LOWER(usertype) IN ('customer', 'casual') THEN 'casual'
+    ELSE 'unknown'
+  END AS user_type_norm,
+
+  -- Duration in minutes:
+  (tripduration / 60.0) AS ride_minutes,
+
+  -- Time features
+  EXTRACT(HOUR FROM start_time) AS start_hour
+FROM `valiant-monitor-476020-u8.Cyclist_Case_Study.Divvy_Trips_2019_Q1`
+WHERE start_time IS NOT NULL
+  AND end_time IS NOT NULL
+  AND tripduration IS NOT NULL
+  AND tripduration > 0;
