@@ -8,7 +8,7 @@ usertype,
 APPROX_QUANTILES(ride_length_minutes, 100) [OFFSET(50)] AS median_ride_length_min
 FROM "valiant-monitor-476020-u8.Cyclist_Case_Study.divvy_clean_q1'
 GROUP BY usertype;
--- Optional: ride length buckets (useful for Power BI histogram)
+
 SELECT
 usertype,
 CASE
