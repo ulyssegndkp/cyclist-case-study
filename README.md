@@ -21,8 +21,7 @@ Analyze usage differences between annual members and casual riders to support Cy
 
 ## Outputs
 - SQL queries in `/sql`
-- Power BI dashboard in `/powerbi`
-- Visual exports in `/powerbi/dashboard_screenshots`
+- Visual exports in `/figures`
 
 ## Medium Article
 Full business narrative and recommendations:
